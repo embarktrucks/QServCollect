@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+IMAGE="sour:dev"
+
+color_blue() {
+  echo -e "\e[34m"$1"\e[0m"
+}
+
+image_exists() {
+  docker image ls \
+    --format "{{ .Repository}}:{{ .Tag }}" $IMAGE \
+    | grep $IMAGE 2>&1 > /dev/null
+}
+
+if ! image_exists; then
+  make dev -C "$SCRIPT_DIR"
+else
+  time=$(docker image inspect $IMAGE -f "{{ .Metadata.LastTagTime }}")
+  out="Using $IMAGE. Last built at $time.\n"
+  echo -e $(color_blue "$out")
+  echo $(color_blue "Run 'make dev' to rebuild.")
+fi
+
+if [ "$#" -eq 0 ]; then
+  EXEC="/bin/bash"
+else
+  EXEC="$@"
+fi
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+docker run --rm \
+  --network=sour_default \
+  --init \
+  -v "$(pwd)":/app/sour \
+  -w "/app/sour" \
+  -it sour:dev \
+  $EXEC

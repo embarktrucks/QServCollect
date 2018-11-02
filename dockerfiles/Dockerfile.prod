@@ -1,0 +1,8 @@
+COPY . .
+
+ENV EMBARK_ENV "PRODUCTION"
+ENV EMBARK_DB "production"
+
+RUN pip install -e .
+
+ENTRYPOINT [ "/app/empyre/deploy/entrypoint" ]

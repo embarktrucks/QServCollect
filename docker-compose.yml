@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  server:
+    image: sour:server
+
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+    ports:
+      - "28785:28785/udp"
+
+    working_dir: /opt/QServCollect
+
+    command: /bin/bash -c "./qserv"

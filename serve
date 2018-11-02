@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Runs all of the services that can be run locally.
+
+make dev
+make dataglow
+
+set="${1:-all}"
+
+services=""
+
+services+="-f compose/db.yml "
+services+="-f compose/api.yml "
+services+="-f compose/importer.yml "
+services+="-f compose/geotab_poll.yml "
+services+="-f compose/airflow.yml "
+services+="-f compose/redis.yml "
+
+if [ "$set" == "api" ]; then
+  services="-f compose/db.yml "
+  services+="-f compose/api.yml "
+  services+="-f compose/redis.yml "
+fi
+
+# There's a weird race condition here that bitnami introduces. I'm too lazy to
+# root cause it.
+docker-compose -f compose/redis.yml rm --force
+docker-compose $services up --build

@@ -445,6 +445,7 @@ void kicknonlocalclients(int reason)
 
 void process(ENetPacket *packet, int sender, int chan)   // sender may be -1
 {
+    logoutf("Got a packet on channel %d from sender %d", chan, sender);
     packetbuf p(packet);
     server::parsepacket(sender, chan, p);
     if(p.overread()) { disconnect_client(sender, DISC_EOP); return; }

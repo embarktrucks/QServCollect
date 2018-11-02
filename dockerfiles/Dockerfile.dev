@@ -1,0 +1,4 @@
+# We need to redefine this because we're not actually installing
+# the embark packages.
+ENV PYTHONPATH "/usr/local/lib/python3.7/dist-packages::/app/sour"
+ENV EMBARK_ENV "DEV"
