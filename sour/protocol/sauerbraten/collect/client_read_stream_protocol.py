@@ -9,6 +9,7 @@ from sour.protocol.stream_specification import (
     IteratedFieldCollection,
     ConditionalFieldCollection,
     RawField,
+    FileField,
     StreamContainerType,
 )
 
@@ -644,6 +645,12 @@ mt = MessageType(
     ),
 )
 sauerbraten_stream_spec.add_message_type(message_types.N_SENDDEMOLIST, mt)
+
+mt = MessageType(
+    "N_SENDDEMO",
+    FileField(name="demofile")
+)
+sauerbraten_stream_spec.add_message_type(message_types.N_SENDDEMO, mt)
 
 sc = StreamContainerType(
     CubeDataStream,

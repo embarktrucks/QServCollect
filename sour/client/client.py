@@ -10,6 +10,7 @@ from sour.protocol.cube_data_stream import CubeDataStream
 import enet
 import random
 import struct
+import traceback
 
 
 def to_bytes(string):
@@ -35,7 +36,8 @@ class Client(object):
 
     def on_message(self, msg_type, message):
         print(msg_type, message)
-        pass
+        if msg_type == "N_SENDDEMOLIST":
+            self.send("N_GETDEMO", demonum=0)
 
     def send(self, msg_type, **kwargs):
         msg = server_spec.write(msg_type, **kwargs)
@@ -47,7 +49,7 @@ class Client(object):
         self.send("N_CLIENTPING", ping=12)
 
     def connect(self, addr="server", port=28785):
-        self.peer = self.sock.connect(enet.Address(bytearray(addr, "utf-8"), port), 2)
+        self.peer = self.sock.connect(enet.Address(bytearray(addr, "utf-8"), port), 3)
 
         while True:
             event = self.sock.service(1000)
@@ -69,7 +71,8 @@ class Client(object):
                 cds = CubeDataStream(event.packet.data)
                 try:
                     messages = client_spec.read(cds, {}, {})
-                except:
+                except Exception as e:
+                    traceback.print_exc()
                     continue  # probably N_POS
 
                 for msg_type, message in messages:

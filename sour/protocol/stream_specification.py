@@ -51,6 +51,16 @@ class RawField(object):
     def read(self, stream_object, game_state={}):
         return (self.name, read_method_mapping["stream_data"](stream_object, self.size))
 
+class FileField(object):
+    """
+    For demos, maps, etc. Consumes the rest of the stream.
+    """
+    def __init__(self, name=""):
+        self.name = name
+
+    def read(self, stream_object, game_state={}):
+        return (self.name, read_method_mapping["stream_data"](stream_object, len(stream_object)))
+
 
 class FieldCollection(object):
     def __init__(self, *fields):
