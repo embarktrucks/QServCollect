@@ -13,9 +13,7 @@ from sour.protocol.stream_specification import (
 )
 
 
-sauerbraten_stream_spec = StreamSpecification(
-    CubeDataStream, {}, "int", message_types
-)
+sauerbraten_stream_spec = StreamSpecification(CubeDataStream, {}, "int", message_types)
 
 mt = MessageType(
     "N_SERVINFO",
@@ -636,6 +634,16 @@ mt = MessageType(
     Field(name="team", type="string"),
 )
 sauerbraten_stream_spec.add_message_type(message_types.N_INITAI, mt)
+
+mt = MessageType(
+    "N_SENDDEMOLIST",
+    IteratedFieldCollection(
+        name="demos",
+        count=Field(name="number", type="int"),
+        field_collection=FieldCollection(Field(name="info", type="string")),
+    ),
+)
+sauerbraten_stream_spec.add_message_type(message_types.N_SENDDEMOLIST, mt)
 
 sc = StreamContainerType(
     CubeDataStream,

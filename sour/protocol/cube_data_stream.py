@@ -103,7 +103,7 @@ class CubeDataStream(object):
         self.write(bytearray(map(ord, struct.pack("<f", f))))
 
     def putstring(self, s):
-        self.write(bytearray(s, 'utf-8'))
+        self.write(bytearray(s, "utf-8"))
         self.write(0)
 
     def getbyte(self, peek=False):

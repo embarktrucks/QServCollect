@@ -3,7 +3,7 @@ import logging
 from sour.protocol.cube_data_stream import CubeDataStream
 
 logger = logging.getLogger(__name__)
-logger.setLevel(level=logging.WARN)
+logger.setLevel(level=logging.DEBUG)
 
 read_method_mapping = {
     "stream_data": CubeDataStream.read,

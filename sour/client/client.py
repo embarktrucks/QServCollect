@@ -25,7 +25,7 @@ class Client(object):
         Called when the connection is opened and the server responds with
         N_WELCOME.
         """
-        pass
+        self.send("N_LISTDEMOS")
 
     def on_close(self):
         """
@@ -38,19 +38,13 @@ class Client(object):
         pass
 
     def send(self, msg_type, **kwargs):
-        msg = server_spec.write(
-            msg_type,
-            **kwargs,
-        )
+        msg = server_spec.write(msg_type, **kwargs)
 
         packet = enet.Packet(msg)
         self.peer.send(1, packet)
 
     def send_pong(self):
-        self.send(
-            "N_CLIENTPING",
-            ping=12,
-        )
+        self.send("N_CLIENTPING", ping=12)
 
     def connect(self, addr="server", port=28785):
         self.peer = self.sock.connect(enet.Address(bytearray(addr, "utf-8"), port), 2)
@@ -68,7 +62,6 @@ class Client(object):
                     authdomain="",
                     authname="",
                 )
-                self.open()
 
             elif event.type == enet.EVENT_TYPE_DISCONNECT:
                 print("%s: DISCONNECT" % event.peer.address)
@@ -77,11 +70,14 @@ class Client(object):
                 try:
                     messages = client_spec.read(cds, {}, {})
                 except:
-                    continue # probably N_POS
+                    continue  # probably N_POS
 
                 for msg_type, message in messages:
                     if msg_type == "N_CLIENTPING":
                         self.send_pong()
                         continue
+
+                    if msg_type == "N_WELCOME":
+                        self.open()
 
                     self.on_message(msg_type, message)
