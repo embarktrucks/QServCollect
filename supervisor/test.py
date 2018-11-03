@@ -6,7 +6,7 @@ async def main():
 
     await c.connect()
 
-    while True:
-        print(await c.grab_message())
+    await c.list_demos()
+    await c.get_demo(0, 'blah')
 
 asyncio.run(main())

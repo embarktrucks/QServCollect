@@ -60,6 +60,7 @@ class Client(object):
             if is_ok(event):
                 return event
 
+
     async def poll_message(self):
         """
         Poll for a message blob.
@@ -74,8 +75,10 @@ class Client(object):
 
         return messages
 
+
     async def send_pong(self):
         await self.send("N_CLIENTPING", ping=12)
+
 
     async def grab_message(self):
         """
@@ -93,6 +96,7 @@ class Client(object):
 
             return messages
 
+
     async def choose_message(self, type_, attempts=15):
         while attempts > 0:
             messages = await self.poll_message()
@@ -102,11 +106,13 @@ class Client(object):
 
         raise NoMessageError("Could not find message of type %s" % type_)
 
+
     def _send(self, msg_type, **kwargs):
         msg = server_spec.write(msg_type, **kwargs)
 
         packet = enet.Packet(msg)
         self.peer.send(1, packet)
+
 
     async def send(self, msg_type, **kwargs):
         """
@@ -115,6 +121,7 @@ class Client(object):
         await self.loop.run_in_executor(
             None, functools.partial(self._send, msg_type, **kwargs)
         )
+
 
     async def connect(self):
         await self.loop.run_in_executor(None, self._connect, self.address, self.port)
@@ -135,3 +142,21 @@ class Client(object):
         except:
             traceback.print_exc()
             raise ConnectionFailedError("Could not connect to %s:%d" % (addr, port))
+
+
+    async def list_demos(self):
+        """
+        List the demos the server has available.
+        """
+        await self.send("N_LISTDEMOS")
+        response = await self.choose_message("N_SENDDEMOLIST")
+        return response["demos"]
+
+
+    async def get_demo(self, demonum, filename):
+        await self.send("N_GETDEMO", demonum=demonum)
+        response = await self.choose_message("N_SENDDEMO")
+        data = response["demofile"]
+
+        with open(filename, 'wb') as demo:
+            demo.write(data)
