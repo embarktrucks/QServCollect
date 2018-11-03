@@ -35,7 +35,6 @@ class Client(object):
         pass
 
     def on_message(self, msg_type, message):
-        print(msg_type, message)
         if msg_type == "N_SENDDEMOLIST":
             self.send("N_GETDEMO", demonum=0)
 
@@ -55,7 +54,6 @@ class Client(object):
             event = self.sock.service(1000)
 
             if event.type == enet.EVENT_TYPE_CONNECT:
-                print("%s: CONNECT" % event.peer.address)
                 self.send(
                     "N_CONNECT",
                     name="bot_algalon_the_observer",
@@ -66,7 +64,7 @@ class Client(object):
                 )
 
             elif event.type == enet.EVENT_TYPE_DISCONNECT:
-                print("%s: DISCONNECT" % event.peer.address)
+                self.on_close()
             elif event.type == enet.EVENT_TYPE_RECEIVE:
                 cds = CubeDataStream(event.packet.data)
                 try:
