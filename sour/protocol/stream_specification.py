@@ -6,11 +6,12 @@ logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.DEBUG)
 
 read_method_mapping = {
-    "stream_data": CubeDataStream.read,
-    "int": CubeDataStream.getint,
-    "uint": CubeDataStream.getuint,
-    "string": CubeDataStream.getstring,
     "float": CubeDataStream.getfloat,
+    "int": CubeDataStream.getint,
+    "physics": CubeDataStream.getphysics,
+    "stream_data": CubeDataStream.read,
+    "string": CubeDataStream.getstring,
+    "uint": CubeDataStream.getuint,
 }
 
 write_method_mapping = {
@@ -51,15 +52,20 @@ class RawField(object):
     def read(self, stream_object, game_state={}):
         return (self.name, read_method_mapping["stream_data"](stream_object, self.size))
 
+
 class FileField(object):
     """
     For demos, maps, etc. Consumes the rest of the stream.
     """
+
     def __init__(self, name=""):
         self.name = name
 
     def read(self, stream_object, game_state={}):
-        return (self.name, read_method_mapping["stream_data"](stream_object, len(stream_object)))
+        return (
+            self.name,
+            read_method_mapping["stream_data"](stream_object, len(stream_object)),
+        )
 
 
 class FieldCollection(object):

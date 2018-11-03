@@ -1,5 +1,9 @@
 import collections
 import struct
+from sour.common.utils.clamp import clamp
+from sour.common.utils.vecfromyawpitch import vecfromyawpitch
+from sour.common.vec import vec
+from sour.protocol.sauerbraten.collect.physics_state import PhysicsState
 
 
 class CubeDataStream(object):
@@ -145,6 +149,70 @@ class CubeDataStream(object):
             return self.read(self.data.index(0), peek).decode("utf-8")
         finally:
             self.read(1, peek)  # Throw away the null terminator
+
+    def getphysics(self, peek=False):
+        d = PhysicsState()
+
+        physstate = self.getbyte()
+        flags = self.getuint()
+
+        for k in range(3):
+            n = self.getbyte()
+            n |= self.getbyte() << 8
+            if flags & (1 << k):
+                n |= self.getbyte() << 16
+                if n & 0x800000:
+                    n |= -1 << 24
+            d.o[k] = n
+
+        dir = self.getbyte()
+        dir |= self.getbyte() << 8
+        yaw = dir % 360
+        pitch = clamp(dir / 360, 0, 180) - 90
+        roll = clamp(int(self.getbyte()), 0, 180) - 90
+        mag = self.getbyte()
+        if flags & (1 << 3):
+            mag |= self.getbyte() << 8
+        dir = self.getbyte()
+        dir |= self.getbyte() << 8
+
+        d.vel = vecfromyawpitch(dir % 360, clamp(dir / 360, 0, 180) - 90, 1, 0)
+
+        if flags & (1 << 4):
+            mag = self.getbyte()
+            if flags & (1 << 5):
+                mag |= self.getbyte() << 8
+
+            if flags & (1 << 6):
+                dir = self.getbyte()
+                dir |= self.getbyte() << 8
+                falling = vecfromyawpitch(dir % 360, clamp(dir / 360, 0, 180) - 90, 1, 0)
+            else:
+                falling = vec(0, 0, -1)
+        else:
+            falling = vec(0, 0, 0)
+
+        d.falling = falling
+
+        seqcolor = (physstate >> 3) & 1
+
+        d.yaw = yaw
+        d.pitch = pitch
+        d.roll = roll
+
+        if (physstate >> 4) & 2:
+            d.move = -1
+        else:
+            d.move = (physstate >> 4) & 1
+
+        if (physstate >> 6) & 2:
+            d.strafe = -1
+        else:
+            d.strafe = (physstate >> 6) & 1
+
+        d.physstate = physstate & 7
+
+        return d
 
     def tobytes(self):
         return bytes(self.data)

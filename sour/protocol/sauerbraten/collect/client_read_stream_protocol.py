@@ -41,6 +41,9 @@ sauerbraten_stream_spec.add_message_type(message_types.N_AUTHCHAL, mt)
 mt = MessageType("N_PONG", Field(name="cmillis", type="int"))
 sauerbraten_stream_spec.add_message_type(message_types.N_PONG, mt)
 
+mt = MessageType("N_POS", Field(name="clientnum", type="int"), Field(name="state", type="physics"))
+sauerbraten_stream_spec.add_message_type(message_types.N_POS, mt)
+
 mt = MessageType("N_SERVMSG", Field(name="text", type="string"))
 sauerbraten_stream_spec.add_message_type(message_types.N_SERVMSG, mt)
 
@@ -646,10 +649,7 @@ mt = MessageType(
 )
 sauerbraten_stream_spec.add_message_type(message_types.N_SENDDEMOLIST, mt)
 
-mt = MessageType(
-    "N_SENDDEMO",
-    FileField(name="demofile")
-)
+mt = MessageType("N_SENDDEMO", FileField(name="demofile"))
 sauerbraten_stream_spec.add_message_type(message_types.N_SENDDEMO, mt)
 
 sc = StreamContainerType(
