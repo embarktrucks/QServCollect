@@ -33,8 +33,24 @@ class Client(object):
         """
         pass
 
-    def on_message(self, message):
+    def on_message(self, msg_type, message):
+        print(msg_type, message)
         pass
+
+    def send(self, msg_type, **kwargs):
+        msg = server_spec.write(
+            msg_type,
+            **kwargs,
+        )
+
+        packet = enet.Packet(msg)
+        self.peer.send(1, packet)
+
+    def send_pong(self):
+        self.send(
+            "N_CLIENTPING",
+            ping=12,
+        )
 
     def connect(self, addr="server", port=28785):
         self.peer = self.sock.connect(enet.Address(bytearray(addr, "utf-8"), port), 2)
@@ -44,25 +60,28 @@ class Client(object):
 
             if event.type == enet.EVENT_TYPE_CONNECT:
                 print("%s: CONNECT" % event.peer.address)
-
-                msg = server_spec.write(
+                self.send(
                     "N_CONNECT",
-                    name="test",
+                    name="bot_algalon_the_observer",
                     playermodel=0,
                     pwdhash="",
                     authdomain="",
                     authname="",
                 )
-
-                packet = enet.Packet(msg)
-                print(self.peer.send(1, packet))
-                print("Sent login packet")
                 self.open()
+
             elif event.type == enet.EVENT_TYPE_DISCONNECT:
                 print("%s: DISCONNECT" % event.peer.address)
-                continue
             elif event.type == enet.EVENT_TYPE_RECEIVE:
-                print("%s: IN:  %r" % (event.peer.address, event.packet.data))
                 cds = CubeDataStream(event.packet.data)
-                print(cds.getint())
-                continue
+                try:
+                    messages = client_spec.read(cds, {}, {})
+                except:
+                    continue # probably N_POS
+
+                for msg_type, message in messages:
+                    if msg_type == "N_CLIENTPING":
+                        self.send_pong()
+                        continue
+
+                    self.on_message(msg_type, message)

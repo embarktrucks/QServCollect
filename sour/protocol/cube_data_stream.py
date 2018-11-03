@@ -103,7 +103,7 @@ class CubeDataStream(object):
         self.write(bytearray(map(ord, struct.pack("<f", f))))
 
     def putstring(self, s):
-        self.write(bytearray(map(ord, s)))
+        self.write(bytearray(s, 'utf-8'))
         self.write(0)
 
     def getbyte(self, peek=False):
@@ -113,12 +113,12 @@ class CubeDataStream(object):
         c = self.read(1, peek)
 
         if c == 0x80:
-            t = str(self.read(3 if peek else 2, peek))
+            t = self.read(3 if peek else 2, peek)
             if peek:
                 t = t[1:]
             return struct.unpack("h", t)[0]
         elif c == 0x81:
-            t = str(self.read(5 if peek else 4, peek))
+            t = self.read(5 if peek else 4, peek)
             if peek:
                 t = t[1:]
             return struct.unpack("i", t)[0]
@@ -142,7 +142,7 @@ class CubeDataStream(object):
 
     def getstring(self, peek=False):
         try:
-            return str(self.read(self.data.index(chr(0)), peek))
+            return self.read(self.data.index(0), peek).decode("utf-8")
         finally:
             self.read(1, peek)  # Throw away the null terminator
 

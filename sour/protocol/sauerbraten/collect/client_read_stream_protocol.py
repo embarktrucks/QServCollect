@@ -1,5 +1,5 @@
 from sour.common.constants import message_types, weapon_types
-from sour.protocol.read_cube_data_stream import ReadCubeDataStream
+from sour.protocol.cube_data_stream import CubeDataStream
 from sour.protocol.stream_specification import (
     StreamSpecification,
     MessageType,
@@ -14,7 +14,7 @@ from sour.protocol.stream_specification import (
 
 
 sauerbraten_stream_spec = StreamSpecification(
-    ReadCubeDataStream, {}, "int", message_types
+    CubeDataStream, {}, "int", message_types
 )
 
 mt = MessageType(
@@ -638,7 +638,7 @@ mt = MessageType(
 sauerbraten_stream_spec.add_message_type(message_types.N_INITAI, mt)
 
 sc = StreamContainerType(
-    ReadCubeDataStream,
+    CubeDataStream,
     {},
     "int",
     FieldCollection(Field(name="clientnum", type="int")),

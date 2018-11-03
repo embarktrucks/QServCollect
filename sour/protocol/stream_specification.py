@@ -392,7 +392,7 @@ class StreamSpecification(object):
                         stream_object, state, game_state=game_state
                     )
                 else:
-                    logger.error("Unknown message: {}".format(debug_message_type_name))
+                    # logger.error("Unknown message: {}".format(debug_message_type_name))
                     raise UnknownMessageType(message_type_id)
             return read_data
         except TypeError:
