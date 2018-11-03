@@ -7,6 +7,8 @@ class CubeDataStream(object):
         if isinstance(data, CubeDataStream):
             self.data = bytearray(data.data)
         elif isinstance(data, bytearray):
+            self.data = data
+        elif isinstance(data, bytes):
             self.data = bytearray(data)
         else:
             self.data = bytearray(map(ord, data))
@@ -121,7 +123,7 @@ class CubeDataStream(object):
                 t = t[1:]
             return struct.unpack("i", t)[0]
         else:
-            return struct.unpack("b", chr(c))[0]
+            return struct.unpack("b", bytes([c]))[0]
 
     def getuint(self, peek=False):
         n = self.read(1)

@@ -5,6 +5,8 @@ from sour.protocol.sauerbraten.collect.client_read_stream_protocol import (
     sauerbraten_stream_spec as client_spec,
 )
 
+from sour.protocol.cube_data_stream import CubeDataStream
+
 import enet
 import random
 import struct
@@ -15,6 +17,22 @@ def to_bytes(string):
 class Client(object):
     def __init__(self):
         self.sock = enet.Host(None, 1, 2)
+
+    def open(self):
+        """
+        Called when the connection is opened and the server responds with
+        N_WELCOME.
+        """
+        pass
+
+    def on_close(self):
+        """
+        Called when the connection is closed.
+        """
+        pass
+
+    def on_message(self, message):
+        pass
 
     def connect(self, addr="server", port=28785):
         self.peer = self.sock.connect(enet.Address(bytearray(addr, 'utf-8'), port), 2)
@@ -29,20 +47,12 @@ class Client(object):
                 packet = enet.Packet(msg)
                 print(self.peer.send(1, packet))
                 print("Sent login packet")
-
+                self.open()
             elif event.type == enet.EVENT_TYPE_DISCONNECT:
                 print("%s: DISCONNECT" % event.peer.address)
                 continue
             elif event.type == enet.EVENT_TYPE_RECEIVE:
                 print("%s: IN:  %r" % (event.peer.address, event.packet.data))
-                client_spec.read(event.packet.data, {})
+                cds = CubeDataStream(event.packet.data)
+                print(cds.getint())
                 continue
-
-            # counter += 1
-            # if counter >= MSG_NUMBER:
-                # msg = SHUTDOWN_MSG
-                # peer.send(0, enet.Packet(msg))
-                # host.service(100)
-                # peer.disconnect()
-
-            # print("%s: OUT: %r" % (self.peer.address, msg))
