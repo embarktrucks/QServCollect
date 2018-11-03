@@ -13,16 +13,8 @@ from sour.protocol.stream_specification import (
 )
 
 
-type_method_mapping = {
-    "stream_data": ReadCubeDataStream.read,
-    "int": ReadCubeDataStream.getint,
-    "uint": ReadCubeDataStream.getuint,
-    "string": ReadCubeDataStream.getstring,
-    "float": ReadCubeDataStream.getfloat,
-}
-
 sauerbraten_stream_spec = StreamSpecification(
-    ReadCubeDataStream, type_method_mapping, {}, "int", message_types
+    ReadCubeDataStream, {}, "int", message_types
 )
 
 mt = MessageType(
@@ -647,7 +639,6 @@ sauerbraten_stream_spec.add_message_type(message_types.N_INITAI, mt)
 
 sc = StreamContainerType(
     ReadCubeDataStream,
-    type_method_mapping,
     {},
     "int",
     FieldCollection(Field(name="clientnum", type="int")),

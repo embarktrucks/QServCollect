@@ -11,8 +11,10 @@ import enet
 import random
 import struct
 
+
 def to_bytes(string):
-    return string.encode('utf-8')
+    return string.encode("utf-8")
+
 
 class Client(object):
     def __init__(self):
@@ -35,15 +37,23 @@ class Client(object):
         pass
 
     def connect(self, addr="server", port=28785):
-        self.peer = self.sock.connect(enet.Address(bytearray(addr, 'utf-8'), port), 2)
+        self.peer = self.sock.connect(enet.Address(bytearray(addr, "utf-8"), port), 2)
 
         while True:
             event = self.sock.service(1000)
 
             if event.type == enet.EVENT_TYPE_CONNECT:
                 print("%s: CONNECT" % event.peer.address)
-                empty = to_bytes('')
-                msg = struct.pack("I4sIsss", 0, to_bytes('two'), 0, empty, empty, empty)
+
+                msg = server_spec.write(
+                    "N_CONNECT",
+                    name="test",
+                    playermodel=0,
+                    pwdhash="",
+                    authdomain="",
+                    authname="",
+                )
+
                 packet = enet.Packet(msg)
                 print(self.peer.send(1, packet))
                 print("Sent login packet")
