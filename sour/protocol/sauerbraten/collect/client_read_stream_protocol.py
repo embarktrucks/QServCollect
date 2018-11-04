@@ -13,7 +13,6 @@ from sour.protocol.stream_specification import (
     StreamContainerType,
 )
 
-
 sauerbraten_stream_spec = StreamSpecification(CubeDataStream, {}, "int", message_types)
 
 mt = MessageType(
@@ -61,6 +60,12 @@ sauerbraten_stream_spec.add_message_type(message_types.N_MASTERMODE, mt)
 
 mt = MessageType("N_CDIS", Field(name="clientnum", type="int"))
 sauerbraten_stream_spec.add_message_type(message_types.N_CDIS, mt)
+
+mt = MessageType("N_JUMPPAD", Field(name="aiclientnum", type="int"), Field(name="jumppad", type="int"))
+sauerbraten_stream_spec.add_message_type(message_types.N_JUMPPAD, mt)
+
+mt = MessageType("N_TELEPORT", Field(name="aiclientnum", type="int"), Field(name="teledest", type="int"))
+sauerbraten_stream_spec.add_message_type(message_types.N_TELEPORT, mt)
 
 mt = MessageType(
     "N_SPECTATOR", Field(name="clientnum", type="int"), Field(name="value", type="int")

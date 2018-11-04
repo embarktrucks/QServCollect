@@ -1,15 +1,13 @@
 import gzip
 import struct
 
-from sour.protocol.sauerbraten.collect.client_read_message_processor import (
-    ClientReadMessageProcessor,
+from sour.protocol.cube_data_stream import CubeDataStream
+from sour.protocol.sauerbraten.collect.client_read_stream_protocol import (
+    sauerbraten_stream_spec as client_spec,
 )
-
 
 def get_demo_data(demo_filename):
     "Returns a list of ClientSession objects."
-
-    mp = ClientReadMessageProcessor()
 
     with gzip.open(demo_filename) as f:
         DEMO_MAGIC, demo_version, protocol_version = struct.unpack("16sii", f.read(24))
@@ -27,7 +25,8 @@ def get_demo_data(demo_filename):
             if len(d) < length:
                 break
 
-            messages = mp.process(channel, d)
+            cds = CubeDataStream(d)
+            messages = client_spec.read(cds, {}, {})
 
             for message in messages:
                 print(millis, message)

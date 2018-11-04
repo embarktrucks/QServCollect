@@ -41,7 +41,7 @@ class ClientReadMessageProcessor(object):
         return messages
 
     def _parse_channel_0_data(self, data):
-        cds = ReadCubeDataStream(data)
+        cds = CubeDataStream(data)
         message_type = cds.getint()
 
         if message_type == message_types.N_POS:

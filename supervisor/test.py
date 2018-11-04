@@ -6,7 +6,9 @@ async def main():
 
     await c.connect()
 
-    await c.list_demos()
-    await c.get_demo(0, 'blah')
+    while True:
+        await c.choose_message("N_MAPCHANGE")
+        demos = await c.list_demos()
+        await c.get_demo(len(demos), 'blah')
 
 asyncio.run(main())
